@@ -11,6 +11,12 @@ import {
 } from "../utils/APIUtils";
 import { create } from "json-server";
 
+
+// In a more complex application I would use Redux as opposed to context. However, I do want to show how
+// I am using redux patterns and best practices even without using redux itself.
+// Also, in a larger application I would rather make smaller providers that are more specific to the components
+// that make use of them, as opposed to put everything on the global App Provider 
+
 const AppContext = React.createContext();
 
 function useAppContext() {
@@ -277,7 +283,6 @@ const AppProvider = function (props) {
     }
   }, [selectedCustomerID]);
 
-  // TODO: make update sideeffects
   React.useEffect(() => {
 
     const putUpdatedTemplate = async (body) => {

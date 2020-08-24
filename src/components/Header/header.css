@@ -1,0 +1,23 @@
+.header {
+    display:flex;
+    padding: 1rem 1rem;
+    justify-content: center;
+}
+
+.logo {
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+@media only screen and (min-width: 600px) {
+    .header {
+        padding: 1.5rem 3rem;
+        justify-content: flex-start;
+    }
+    .logo{
+        font-size: 2rem;
+    }
+}
