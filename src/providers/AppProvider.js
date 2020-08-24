@@ -28,7 +28,7 @@ const initialState = {
     loading: false,
     lastUpdated: null,
   },
-  COSTUMER_LIST: {
+  CUSTOMER_LIST: {
     data: null,
     error: false,
     loading: false,
@@ -40,12 +40,18 @@ const initialState = {
     loading: false,
     lastUpdated: null,
   },
-  SELECTED_COSTUMER: {
+  SELECTED_CUSTOMER: {
     data: null,
     error: false,
     loading: false,
     lastUpdated: null,
   },
+  CUSTOMER_BY_EMAIL: {
+    data: null,
+    error: false,
+    loading: false,
+    lastUpdated: null,
+  }
 };
 
 function reducer(state, action) {
@@ -90,6 +96,17 @@ function reducer(state, action) {
           },
         },
       };
+    case "FETCH_CUSTOMER_BY_EMAIL":
+      return {
+        ...state,
+        ...{
+          CUSTOMER_BY_EMAIL: {
+            ...state.CUSTOMER_BY_EMAIL,
+            ...action.payload,
+          },
+        },
+      }
+
     default:
       return state;
   }
@@ -98,10 +115,13 @@ function reducer(state, action) {
 const AppProvider = function (props) {
   const { children } = props;
   const [store, dispatch] = React.useReducer(reducer, initialState);
-  const [selectedCostumerID, setSelectedCostumerID] = React.useState();
+  const [selectedCustomerID, setSelectedCustomerID] = React.useState();
   const [selectedTemplateID, setSelectedTemplateID] = React.useState();
-  const [updateTemplate, setUpdateTemplate] = React.useState(false);
-  const [createNewTemplate, setCreateNewTemplate] = React.useState(false);
+  const [updatedTemplate, setUpdatedTemplate] = React.useState({});
+  const [newTemplate, setNewTemplate] = React.useState({});
+  const [partialEmail, setPartialEmail] = React.useState("");
+  const [fullEmail, setFullEmail] = React.useState("");
+  const [refresh, setRefresh] = React.useState(false);
 
   // action creators:
   function actionLoading(actionType, state) {
@@ -137,6 +157,7 @@ const AppProvider = function (props) {
     dispatch(action);
   }
 
+  // fetch complete list of customers and templates on mount or when refresh is triggered
   React.useEffect(() => {
     const getTemplateList = () => {
       actionLoading("FETCH_TEMPLATE_LIST", true);
@@ -152,10 +173,10 @@ const AppProvider = function (props) {
         });
     };
 
-    const getCostumerList = () => {
+    const getCustomerList = () => {
       actionLoading("FETCH_CUSTOMER_LIST", true);
       actionError("FETCH_CUSTOMER_LIST", false);
-      return fetchTemplates()
+      return fetchCustomers()
         .then((response) => {
           actionUpdateData("FETCH_CUSTOMER_LIST", response);
           actionLoading("FETCH_CUSTOMER_LIST", false);
@@ -166,11 +187,54 @@ const AppProvider = function (props) {
         });
     };
 
-    getCostumerList();
-    getTemplateList();
-  }, []);
+    if (!!refresh) {
+      getCustomerList();
+      getTemplateList();
+      setRefresh(false);
+    }
+  }, [refresh]);
 
-  // Eventhough you dont need to call the api for a specific costumer or template
+  // fetch customers by email
+  React.useEffect(() => {
+    const getCustomerByEmail = (email) => {
+      actionLoading("FETCH_CUSTOMER_BY_EMAIL", true);
+      actionError("FETCH_CUSTOMER_BY_EMAIL", false);
+      return fetchCustomersByEmail(email)
+        .then((response) => {
+          actionUpdateData("FETCH_CUSTOMER_BY_EMAIL", response);
+          actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
+        })
+        .catch(() => {
+          actionError("FETCH_CUSTOMER_BY_EMAIL", true);
+          actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
+        });
+    }
+    if (!!fullEmail) {
+      getCustomerByEmail(fullEmail);
+    }
+  }, [fullEmail])
+
+  //fetch customers by partial email
+  React.useEffect(() => {
+    const getCustomerByPartialEmail = (email) => {
+      actionLoading("FETCH_CUSTOMER_BY_EMAIL", true);
+      actionError("FETCH_CUSTOMER_BY_EMAIL", false);
+      return fetchCustomersByPartialEmail(email)
+        .then((response) => {
+          actionUpdateData("FETCH_CUSTOMER_BY_EMAIL", response);
+          actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
+        })
+        .catch(() => {
+          actionError("FETCH_CUSTOMER_BY_EMAIL", true);
+          actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
+        });
+    }
+    if (!!partialEmail) {
+      getCustomerByPartialEmail(partialEmail);
+    }
+  }, [partialEmail])
+
+  // Eventhough you dont need to call the api for a specific customer or template
   // since when you fetch the list you get all the info, in a larger application
   // this wouldnt be the case
   React.useEffect(() => {
@@ -188,40 +252,76 @@ const AppProvider = function (props) {
         });
     };
 
-    if (selectedTemplateID && !createNewTemplate) {
+    if (selectedTemplateID && !Object.keys(newTemplate).length) {
       getSelectedTemplate(selectedTemplateID);
     }
-  }, [selectedTemplateID, createNewTemplate]);
+  }, [selectedTemplateID, newTemplate]);
 
   React.useEffect(() => {
-    const getSelectedCostumer = (id) => {
-      actionLoading("FETCH_SELECTED_COSTUMER", true);
-      actionError("FETCH_SELECTED_COSTUMER", false);
+    const getSelectedCustomer = (id) => {
+      actionLoading("FETCH_SELECTED_CUSTOMER", true);
+      actionError("FETCH_SELECTED_CUSTOMER", false);
       return fetchCustomerByID(id)
         .then((response) => {
-          actionUpdateData("FETCH_SELECTED_COSTUMER", response);
-          actionLoading("FETCH_SELECTED_COSTUMER", false);
+          actionUpdateData("FETCH_SELECTED_CUSTOMER", response);
+          actionLoading("FETCH_SELECTED_CUSTOMER", false);
         })
         .catch(() => {
-          actionError("FETCH_SELECTED_COSTUMER", true);
-          actionLoading("FETCH_SELECTED_COSTUMER", false);
+          actionError("FETCH_SELECTED_CUSTOMER", true);
+          actionLoading("FETCH_SELECTED_CUSTOMER", false);
         });
     };
 
-    if (!!selectedCostumerID && !createNewTemplate) {
-      getSelectedCostumer(selectedCostumerID);
+    if (!!selectedCustomerID) {
+      getSelectedCustomer(selectedCustomerID);
     }
-  }, [selectedCostumerID, createNewTemplate]);
+  }, [selectedCustomerID]);
 
   // TODO: make update sideeffects
+  React.useEffect(() => {
 
-  console.log("store", store.EVENT_LIST);
+    const putUpdatedTemplate = async (body) => {
+      try {
+        const response = await updateTemplate(body); // use this response to trigger a snackbar that communicates success to the user
+        setSelectedTemplateID(updatedTemplate.id) // will trigger a refresh of the updated template
+      } catch (e) {
+        console.log("There was an error when updating template") // Use this catch to trigger error snackbar
+      }
+    }
+
+    if (!!Object.keys(updatedTemplate).length) {
+      putUpdatedTemplate(updatedTemplate);
+    }
+  }, [updatedTemplate])
+
+  React.useEffect(() => {
+    const postNewTemplate = async (body) => {
+      try {
+        const response = await saveNewTemplate(body); // use response to trigger success snackbar
+        setSelectedTemplateID(newTemplate.id); // refresh selected template
+        setRefresh(true); // refresh template list
+      } catch (e) {
+        console.log("There was an error when creating new template") // Use this catch to trigger error snackbar
+      }
+    }
+
+    if (!!Object.keys(newTemplate).length) {
+      postNewTemplate(newTemplate);
+    }
+  }, [newTemplate])
+
   return (
     <AppContext.Provider
       value={{
-        eventList: store.EVENT_LIST,
-        betSlipListStore: store.BETSLIP_LIST,
-        setBetSlipList,
+        selectedCustomerData: store.SELECTED_CUSTOMER,
+        selectedTemplateData: store.SELECTED_TEMPLATE,
+        customerList: store.CUSTOMER_LIST,
+        templateList: store.TEMPLATE_LIST,
+        setNewTemplate,
+        setSelectedCustomerID,
+        setSelectedTemplateID,
+        setUpdatedTemplate,
+        setRefresh
       }}
     >
       {children}
