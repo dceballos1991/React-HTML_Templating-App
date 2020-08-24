@@ -9,6 +9,7 @@ import {
   fetchCustomersByEmail,
   fetchCustomersByPartialEmail,
 } from "../utils/APIUtils";
+import { create } from "json-server";
 
 const AppContext = React.createContext();
 
@@ -69,22 +70,22 @@ function reducer(state, action) {
           },
         },
       };
-    case "SELECTED_TEMPLATE":
+    case "FETCH_SELECTED_TEMPLATE":
       return {
         ...state,
         ...{
-          CURRENT_TEMPLATE: {
-            ...state.CURRENT_TEMPLATE,
+          SELECTED_TEMPLATE: {
+            ...state.SELECTED_TEMPLATE,
             ...action.payload,
           },
         },
       };
-    case "SELECTED_CUSTOMER":
+    case "FETCH_SELECTED_CUSTOMER":
       return {
         ...state,
         ...{
-          CURRENT_CUSTOMER: {
-            ...state.CURRENT_CUSTOMER,
+          SELECTED_CUSTOMER: {
+            ...state.SELECTED_CUSTOMER,
             ...action.payload,
           },
         },
@@ -99,6 +100,8 @@ const AppProvider = function (props) {
   const [store, dispatch] = React.useReducer(reducer, initialState);
   const [selectedCostumerID, setSelectedCostumerID] = React.useState();
   const [selectedTemplateID, setSelectedTemplateID] = React.useState();
+  const [updateTemplate, setUpdateTemplate] = React.useState(false);
+  const [createNewTemplate, setCreateNewTemplate] = React.useState(false);
 
   // action creators:
   function actionLoading(actionType, state) {
@@ -167,12 +170,50 @@ const AppProvider = function (props) {
     getTemplateList();
   }, []);
 
+  // Eventhough you dont need to call the api for a specific costumer or template
+  // since when you fetch the list you get all the info, in a larger application
+  // this wouldnt be the case
   React.useEffect(() => {
-    const updateCurrentTemplate = () => {
-      actionUpdateData("UPDATE_BETSLIP_LIST", betSlipList);
+    const getSelectedTemplate = (id) => {
+      actionLoading("FETCH_SELECTED_TEMPLATE", true);
+      actionError("FETCH_SELECTED_TEMPLATE", false);
+      return fetchTemplatesByID(id)
+        .then((response) => {
+          actionUpdateData("FETCH_SELECTED_TEMPLATE", response);
+          actionLoading("FETCH_SELECTED_TEMPLATE", false);
+        })
+        .catch(() => {
+          actionError("FETCH_SELECTED_TEMPLATE", true);
+          actionLoading("FETCH_SELECTED_TEMPLATE", false);
+        });
     };
-    updateBetSlipList();
-  }, [selectedCostumerID, selectedTemplateID]);
+
+    if (selectedTemplateID && !createNewTemplate) {
+      getSelectedTemplate(selectedTemplateID);
+    }
+  }, [selectedTemplateID, createNewTemplate]);
+
+  React.useEffect(() => {
+    const getSelectedCostumer = (id) => {
+      actionLoading("FETCH_SELECTED_COSTUMER", true);
+      actionError("FETCH_SELECTED_COSTUMER", false);
+      return fetchCustomerByID(id)
+        .then((response) => {
+          actionUpdateData("FETCH_SELECTED_COSTUMER", response);
+          actionLoading("FETCH_SELECTED_COSTUMER", false);
+        })
+        .catch(() => {
+          actionError("FETCH_SELECTED_COSTUMER", true);
+          actionLoading("FETCH_SELECTED_COSTUMER", false);
+        });
+    };
+
+    if (!!selectedCostumerID && !createNewTemplate) {
+      getSelectedCostumer(selectedCostumerID);
+    }
+  }, [selectedCostumerID, createNewTemplate]);
+
+  // TODO: make update sideeffects
 
   console.log("store", store.EVENT_LIST);
   return (
