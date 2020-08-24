@@ -10,11 +10,15 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"
   },
+  "devDependencies": {
+    "json-server": "^0.16.1"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start-server": "json-server --watch data/data.json --routes data/routes.json"
   },
   "eslintConfig": {
     "extends": "react-app"
