@@ -303,7 +303,7 @@ const AppProvider = function (props) {
     };
 
     if (!!Object.keys(updatedTemplate).length) {
-      putUpdatedTemplate(updatedTemplate);
+      putUpdatedTemplate(selectedCustomerID, updatedTemplate);
     }
   }, [updatedTemplate]);
 
@@ -337,6 +337,7 @@ const AppProvider = function (props) {
         selectedTemplateID,
         setSelectedTemplateID,
         setUpdatedTemplate,
+        updatedTemplate,
         setRefresh,
         partialEmail,
         setPartialEmail,

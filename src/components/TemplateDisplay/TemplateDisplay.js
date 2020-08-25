@@ -6,6 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Template from "../Template/Template";
+import TextField from '@material-ui/core/TextField';
 import { useAppContext } from "../../providers/AppProvider";
 
 const useStyles = makeStyles({
@@ -13,16 +14,14 @@ const useStyles = makeStyles({
     minWidth: 275,
     height: "100%",
   },
-  bullet: {
-    display: "inline-block",
-    margin: "0 2px",
-    transform: "scale(0.8)",
+  cardContent: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column"
   },
   title: {
     fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
   },
   buttonMain: {
     background:
@@ -35,18 +34,27 @@ const useStyles = makeStyles({
   },
   buttonActions: {
     justifyContent: "center"
+  },
+  editTextArea: {
+    width: "80%",
+    marginBottom: "1rem"
   }
 });
 
+// With more time I would add a modal that confirms that the user wants to edit or delete a template
 export default function TemplateDisplay() {
   const classes = useStyles();
   const {
     selectedCustomerData,
     selectedTemplateData,
     createTemplateMode,
+    updatedTemplate,
+    setUpdatedTemplate,
   } = useAppContext();
 
   const [templateProps, setTemplateProps] = React.useState();
+  const [templateEditMode, setTemplateEditMode] = React.useState(false);
+  const [temporaryEditTemplate, setTemporaryEditTemplate] = React.useState("");
 
   // in order to accound for missing data for last_order I did the following: 
   React.useEffect(() => {
@@ -59,9 +67,39 @@ export default function TemplateDisplay() {
     }
   }, [selectedCustomerData])
 
+  React.useEffect(() => {
+    if (!!templateEditMode && !!selectedTemplateData.data) {
+      setTemporaryEditTemplate(selectedTemplateData.data);
+    }
+  }, [selectedTemplateData, templateEditMode])
+
+  React.useEffect(() => {
+    setTemplateEditMode(false);
+  }, [selectedCustomerData, selectedTemplateData])
+
+  const handleEditContentChange = (event) => {
+    let templateObj = { ...temporaryEditTemplate }
+    templateObj.content = event.target.value
+    setTemporaryEditTemplate(templateObj);
+  };
+
+  const handleEditNameChange = (event) => {
+    let templateObj = { ...temporaryEditTemplate }
+    templateObj.name = event.target.value
+    setTemporaryEditTemplate(templateObj);
+  };
+
+  const handleEditTemplateClick = () => {
+    setTemplateEditMode(true);
+  };
+
+  const handleSaveTemplateClick = () => {
+    setUpdatedTemplate(temporaryEditTemplate);
+  }
+  console.log(temporaryEditTemplate)
   return (
     <Card className={classes.root}>
-      <CardContent>
+      <CardContent className={classes.cardContent}>
         {(!selectedCustomerData.data || !selectedTemplateData.data) &&
           !createTemplateMode ? (
             <Typography align="center" gutterBottom variant="h6" component="h2">
@@ -86,26 +124,69 @@ export default function TemplateDisplay() {
                 !!selectedTemplateData.data && !selectedTemplateData.loading && !selectedTemplateData.error &&
                 <Template templateProps={templateProps} templateSource={selectedTemplateData.data.content} />
               }
+              {!!templateEditMode &&
+                <>
+                  <TextField
+                    className={classes.editTextArea}
+                    id="outlined-text-area"
+                    label="Template Name"
+                    value={temporaryEditTemplate.name || ""}
+                    onChange={(e) => handleEditNameChange(e)}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.editTextArea}
+                    id="outlined-multiline-text-area"
+                    label="Edit your Template"
+                    multiline
+                    rows={8}
+                    value={temporaryEditTemplate.content || ""}
+                    onChange={(e) => handleEditContentChange(e)}
+                    variant="outlined"
+                  />
+                </>
+              }
             </>
           )}
       </CardContent>
       {!!selectedCustomerData.data && !!selectedTemplateData.data && (
-        <CardActions className={classes.buttonActions} >
-          <Button
-            variant="contained"
-            className={classes.buttonMain}
-          // onClick={() => handleCreateTemplateClick}
-          >
-            edit template
+        <>
+          {!!templateEditMode ? (
+            <CardActions className={classes.buttonActions} >
+              <Button
+                variant="contained"
+                className={classes.buttonMain}
+                onClick={() => handleSaveTemplateClick()}
+              >
+                save
                 </Button>
-          <Button
-            variant="outlined"
-            className={classes.buttonSecondary}
-          // onClick={() => handleCreateTemplateClick}
-          >
-            Delete
+              <Button
+                variant="outlined"
+                className={classes.buttonSecondary}
+              // onClick={() => handleCancelEditClick()}
+              >
+                cancel
                 </Button>
-        </CardActions>
+            </CardActions>
+          ) : (
+              <CardActions className={classes.buttonActions} >
+                <Button
+                  variant="contained"
+                  className={classes.buttonMain}
+                  onClick={() => handleEditTemplateClick()}
+                >
+                  edit template
+                </Button>
+                <Button
+                  variant="outlined"
+                  className={classes.buttonSecondary}
+                // onClick={() => handleDeleteTemplateClick}
+                >
+                  Delete
+                </Button>
+              </CardActions>
+            )}
+        </>
       )}
     </Card>
   );
