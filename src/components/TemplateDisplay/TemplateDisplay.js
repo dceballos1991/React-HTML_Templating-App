@@ -5,6 +5,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import Template from "../Template/Template";
 import { useAppContext } from "../../providers/AppProvider";
 
 const useStyles = makeStyles({
@@ -23,6 +24,7 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
+  template: {}
 });
 
 export default function TemplateDisplay() {
@@ -33,44 +35,48 @@ export default function TemplateDisplay() {
     createTemplateMode,
   } = useAppContext();
 
-  const bull = <span className={classes.bullet}>•</span>;
+  const [templateProps, setTemplateProps] = React.useState();
+
+  // in order to accound for missing data for last_order I did the following: 
+  React.useEffect(() => {
+    if (!!selectedCustomerData.data) {
+      let selectedCustomerDataFixed = { ...selectedCustomerData.data };
+      if (!selectedCustomerDataFixed.last_order) {
+        selectedCustomerDataFixed.last_order = {products: [{ product_name: "How embarrassing! We don't know your last purchase :(" }]};
+      }
+      setTemplateProps({ customer: selectedCustomerDataFixed });
+    }
+  }, [selectedCustomerData])
 
   return (
     <Card className={classes.root}>
       <CardContent>
         {(!selectedCustomerData.data || !selectedTemplateData.data) &&
-        !createTemplateMode ? (
-          <Typography align="center" gutterBottom variant="h6" component="h2">
-            Select a customer and a template to display
+          !createTemplateMode ? (
+            <Typography align="center" gutterBottom variant="h6" component="h2">
+              Select a customer and a template to display
           </Typography>
-        ) : (
-          <>
-            <Typography
-              className={classes.title}
-              align="center"
-              color="textSecondary"
-              gutterBottom
-            >
-              <strong>{selectedTemplateData.data.name}</strong> for{" "}
-              <strong>
-                {(selectedCustomerData.data.firstname || "") +
-                  " " +
-                  (selectedCustomerData.data.lastname || "")}
-              </strong>
-            </Typography>
-            <Typography variant="h5" component="h2">
-              be{bull}nev{bull}o{bull}lent
-            </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              adjective
-            </Typography>
-            <Typography variant="body2" component="p">
-              well meaning and kindly.
-              <br />
-              {'"a benevolent smile"'}
-            </Typography>
-          </>
-        )}
+          ) : (
+            <>
+              <Typography
+                className={classes.title}
+                align="center"
+                color="textSecondary"
+                gutterBottom
+              >
+                <strong>{selectedTemplateData.data.name}</strong> for{" "}
+                <strong>
+                  {(selectedCustomerData.data.firstname || "") +
+                    " " +
+                    (selectedCustomerData.data.lastname || "")}
+                </strong>
+              </Typography>
+              {!!templateProps && !selectedCustomerData.loading && !selectedCustomerData.error &&
+                !!selectedTemplateData.data && !selectedTemplateData.loading && !selectedTemplateData.error &&
+                <Template templateProps={templateProps} templateSource={selectedTemplateData.data.content} />
+              }
+            </>
+          )}
       </CardContent>
       {!!selectedCustomerData.data && !!selectedTemplateData.data && (
         <CardActions>
