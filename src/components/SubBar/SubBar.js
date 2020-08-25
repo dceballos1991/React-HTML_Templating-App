@@ -14,6 +14,8 @@ import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import IconButton from "@material-ui/core/IconButton";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useAppContext } from "../../providers/AppProvider";
 
@@ -58,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
       "linear-gradient(90deg, rgba(216,39,108,1) 22%, rgba(240,137,177,1) 100%)",
     color: "white",
     marginBottom: "1rem",
+  },
+  customerInfo: {
+    padding: ".5rem 0",
   },
 }));
 
@@ -164,117 +169,154 @@ export default function SubBar() {
               flexDirection: "column",
             }}
           >
-            <Typography>Select a Customer:</Typography>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <form className={classes.form}>
-                <FormControl variant="outlined" className={classes.formControl}>
-                  <InputLabel id="customer-select-outlined-label">
-                    Customer List
-                  </InputLabel>
-                  <Select
-                    labelId="customer-select-outlined-label"
-                    id="customer-select-outlined"
-                    value={selectedCustomerID}
-                    onChange={(event) =>
-                      handleSelectCustomerChange(event.target.value)
-                    }
-                    label="Customer List"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {!!customerList.data &&
-                      customerList.data.map((customer) => {
-                        return (
-                          <MenuItem value={customer.id} key={customer.id}>
-                            {customer.firstname + " " + customer.lastname}
-                          </MenuItem>
-                        );
-                      })}
-                  </Select>
-                </FormControl>
-              </form>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="overline">or</Typography>
-            </div>
-            <Typography>Search by Email:</Typography>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <form
-                onSubmit={(e) => handleSearchByEmailSubmit(e)}
-                className={classes.form}
-              >
-                <FormControl variant="outlined" className={classes.formControl}>
-                  <TextField
-                    id="customer-search-input"
-                    label="Customer List"
-                    variant="outlined"
-                    style={{ position: "relative" }}
-                    value={partialEmail}
-                    onChange={(e) => handleSearchByEmailChange(e)}
-                  />
-                  {!!customerSearchByEmailData.data &&
-                    !!customerSearchByEmailData.data.length && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: "100%",
-                          height: "200px",
-                          background: "white",
-                          zIndex: 2,
-                          top: "53px",
-                          borderBottomLeftRadius: "4px",
-                          borderBottomRightRadius: "4px",
-                          borderBottom: "1px solid rgba(0,0,0,.20)",
-                          borderLeft: "1px solid rgba(0,0,0,.20)",
-                          borderRight: "1px solid rgba(0,0,0,.20)",
-                          boxSizing: "border-box",
-                          overflowY: "scroll",
-                        }}
+            {!!displayCustomerInfo && !!selectedCustomerData.data ? (
+              <>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <IconButton onClick={() => handleSelectCustomerChange("")}>
+                    <ArrowBackIcon />
+                  </IconButton>
+                </div>
+                <Typography className={classes.customerInfo}>{`Name: ${
+                  (selectedCustomerData.data.firstname || "") +
+                  " " +
+                  (selectedCustomerData.data.lastname || "")
+                }`}</Typography>
+                <Typography
+                  className={classes.customerInfo}
+                >{`Email: ${selectedCustomerData.data.email}`}</Typography>
+                <Typography className={classes.customerInfo}>{`Last Updated: ${
+                  !!selectedCustomerData.data.last_order
+                    ? selectedCustomerData.data.last_order.timestamp
+                    : "-"
+                }`}</Typography>
+              </>
+            ) : (
+              <>
+                <Typography>Select a Customer:</Typography>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <form className={classes.form}>
+                    <FormControl
+                      variant="outlined"
+                      className={classes.formControl}
+                    >
+                      <InputLabel id="customer-select-outlined-label">
+                        Customer List
+                      </InputLabel>
+                      <Select
+                        labelId="customer-select-outlined-label"
+                        id="customer-select-outlined"
+                        value={selectedCustomerID}
+                        onChange={(event) =>
+                          handleSelectCustomerChange(event.target.value)
+                        }
+                        label="Customer List"
                       >
-                        <List>
-                          {customerSearchByEmailData.data.map((customer) => {
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {!!customerList.data &&
+                          customerList.data.map((customer) => {
                             return (
-                              <ListItem
-                                key={customer.id}
-                                style={{ cursor: "pointer" }}
-                                onClick={() =>
-                                  handleSelectCustomerChange(customer.id)
-                                }
-                              >
-                                <ListItemText
-                                  primary={
-                                    customer.firstname + " " + customer.lastname
-                                  }
-                                  secondary={customer.email}
-                                />
-                              </ListItem>
+                              <MenuItem value={customer.id} key={customer.id}>
+                                {(customer.firstname || "") +
+                                  " " +
+                                  (customer.lastname || "")}
+                              </MenuItem>
                             );
                           })}
-                        </List>
-                      </div>
-                    )}
-                </FormControl>
-              </form>
-            </div>
+                      </Select>
+                    </FormControl>
+                  </form>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography variant="overline">or</Typography>
+                </div>
+                <Typography>Search by Email:</Typography>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <form
+                    onSubmit={(e) => handleSearchByEmailSubmit(e)}
+                    className={classes.form}
+                  >
+                    <FormControl
+                      variant="outlined"
+                      className={classes.formControl}
+                    >
+                      <TextField
+                        id="customer-search-input"
+                        label="Customer List"
+                        variant="outlined"
+                        style={{ position: "relative" }}
+                        value={partialEmail}
+                        onChange={(e) => handleSearchByEmailChange(e)}
+                      />
+                      {!!customerSearchByEmailData.data &&
+                        !!customerSearchByEmailData.data.length && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              width: "100%",
+                              height: "200px",
+                              background: "white",
+                              zIndex: 2,
+                              top: "53px",
+                              borderBottomLeftRadius: "4px",
+                              borderBottomRightRadius: "4px",
+                              borderBottom: "1px solid rgba(0,0,0,.20)",
+                              borderLeft: "1px solid rgba(0,0,0,.20)",
+                              borderRight: "1px solid rgba(0,0,0,.20)",
+                              boxSizing: "border-box",
+                              overflowY: "scroll",
+                            }}
+                          >
+                            <List>
+                              {customerSearchByEmailData.data.map(
+                                (customer) => {
+                                  return (
+                                    <ListItem
+                                      key={customer.id}
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() =>
+                                        handleSelectCustomerChange(customer.id)
+                                      }
+                                    >
+                                      <ListItemText
+                                        primary={
+                                          (customer.firstname || "") +
+                                          " " +
+                                          (customer.lastname || "")
+                                        }
+                                        secondary={customer.email}
+                                      />
+                                    </ListItem>
+                                  );
+                                }
+                              )}
+                            </List>
+                          </div>
+                        )}
+                    </FormControl>
+                  </form>
+                </div>
+              </>
+            )}
           </div>
         </AccordionDetails>
       </Accordion>

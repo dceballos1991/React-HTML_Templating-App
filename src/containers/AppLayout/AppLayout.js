@@ -2,6 +2,7 @@ import React from "react";
 import "./appLayout.css";
 import Header from "../../components/Header/Header";
 import SubBar from "../../components/SubBar/SubBar";
+import MainContentContainer from "../MainContentContainer/MainContentContainer";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const AppLayout = (props) => {
@@ -22,9 +23,7 @@ const AppLayout = (props) => {
         }}
       >
         <SubBar />
-        {/* <MainContent className="main-content">
-                    {children}
-                </MainContent> */}
+        <MainContentContainer>{children}</MainContentContainer>
       </div>
     </>
   );
