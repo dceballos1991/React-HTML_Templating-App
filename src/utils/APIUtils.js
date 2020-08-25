@@ -32,6 +32,15 @@ export function updateTemplate(id, data) {
   }).then((res) => res.json());
 }
 
+export function deleteTemplate(id) {
+  return fetch(`http://localhost:3000/api/templates/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
 export function fetchCustomers() {
   return fetch("http://localhost:3000/api/customers", {
     method: "GET",

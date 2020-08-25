@@ -42,14 +42,16 @@ const useStyles = makeStyles({
 });
 
 // With more time I would add a modal that confirms that the user wants to edit or delete a template
+
+// I would also display success / error snackbars when editing and saving
 export default function TemplateDisplay() {
   const classes = useStyles();
   const {
     selectedCustomerData,
     selectedTemplateData,
     createTemplateMode,
-    updatedTemplate,
     setUpdatedTemplate,
+    setDeleteTemplateID
   } = useAppContext();
 
   const [templateProps, setTemplateProps] = React.useState();
@@ -95,8 +97,20 @@ export default function TemplateDisplay() {
 
   const handleSaveTemplateClick = () => {
     setUpdatedTemplate(temporaryEditTemplate);
+    setTemplateEditMode(false);
   }
-  console.log(temporaryEditTemplate)
+
+  const handleCancelEditClick = () => {
+    setTemplateEditMode(false);
+    setTemporaryEditTemplate("");
+  }
+
+  const handleDeleteTemplateclick = () => {
+    if (!!selectedTemplateData.data) {
+      setDeleteTemplateID(selectedTemplateData.data.id)
+    }
+  }
+
   return (
     <Card className={classes.root}>
       <CardContent className={classes.cardContent}>
@@ -163,7 +177,7 @@ export default function TemplateDisplay() {
               <Button
                 variant="outlined"
                 className={classes.buttonSecondary}
-              // onClick={() => handleCancelEditClick()}
+                onClick={() => handleCancelEditClick()}
               >
                 cancel
                 </Button>
@@ -180,7 +194,7 @@ export default function TemplateDisplay() {
                 <Button
                   variant="outlined"
                   className={classes.buttonSecondary}
-                // onClick={() => handleDeleteTemplateClick}
+                  onClick={() => handleDeleteTemplateclick()}
                 >
                   Delete
                 </Button>

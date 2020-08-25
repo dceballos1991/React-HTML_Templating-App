@@ -8,6 +8,7 @@ import {
   fetchCustomerByID,
   fetchCustomersByEmail,
   fetchCustomersByPartialEmail,
+  deleteTemplate
 } from "../utils/APIUtils";
 // import { create } from "json-server";
 
@@ -127,6 +128,7 @@ const AppProvider = function (props) {
 
   // Create template mode is activated on the subBar and it tells the MainContent that
   // app is in new template mode.
+  const [deleteTemplateID, setDeleteTemplateID] = React.useState();
   const [createTemplateMode, setCreateTemplateMode] = React.useState(false);
   const [partialEmail, setPartialEmail] = React.useState("");
   const [fullEmail, setFullEmail] = React.useState("");
@@ -268,7 +270,7 @@ const AppProvider = function (props) {
     } else {
       actionUpdateData("FETCH_SELECTED_TEMPLATE", null);
     }
-  }, [selectedTemplateID, newTemplate]);
+  }, [selectedTemplateID, newTemplate, refresh]);
 
   React.useEffect(() => {
     const getSelectedCustomer = (id) => {
@@ -290,22 +292,37 @@ const AppProvider = function (props) {
     } else {
       actionUpdateData("FETCH_SELECTED_CUSTOMER", null);
     }
-  }, [selectedCustomerID]);
+  }, [selectedCustomerID, refresh]);
 
   React.useEffect(() => {
-    const putUpdatedTemplate = async (body) => {
+    const putUpdatedTemplate = async (id, data) => {
       try {
-        const response = await updateTemplate(body); // use this response to trigger a snackbar that communicates success to the user
-        setSelectedTemplateID(updatedTemplate.id); // will trigger a refresh of the updated template
+        const response = await updateTemplate(id, data); // use this response to trigger a snackbar that communicates success to the user
+        setRefresh(true); // will trigger a refresh of the updated template
       } catch (e) {
         console.log("There was an error when updating template"); // Use this catch to trigger error snackbar
       }
     };
 
     if (!!Object.keys(updatedTemplate).length) {
-      putUpdatedTemplate(selectedCustomerID, updatedTemplate);
+      putUpdatedTemplate(selectedTemplateID, updatedTemplate);
     }
   }, [updatedTemplate]);
+
+  React.useEffect(() => {
+    const deleteTemplateByID = async (id) => {
+      try {
+        const response = await deleteTemplate(id); // use response to trigger success snackbar
+        setRefresh(true); // refresh template list
+      } catch (e) {
+        console.log("There was an error when creating new template"); // Use this catch to trigger error snackbar
+      }
+    };
+
+    if (!!deleteTemplateID) {
+      deleteTemplateByID(deleteTemplateID);
+    }
+  }, [deleteTemplateID]);
 
   React.useEffect(() => {
     const postNewTemplate = async (body) => {
@@ -344,6 +361,7 @@ const AppProvider = function (props) {
         setFullEmail,
         createTemplateMode,
         setCreateTemplateMode,
+        setDeleteTemplateID,
       }}
     >
       {children}

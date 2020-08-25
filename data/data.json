@@ -2,8 +2,8 @@
   "templates": [
     {
       "id": 1,
-      "name": "Purchase Thank-You Template",
-      "content": "<p>Dear {{customer.firstname}} {{customer.lastname}},</p>\n\n<p>Thank you for your recent order! You've purchased:</p>\n\n<ul>\n    {% for product in customer.last_order.products %}\n    <li>\n        <strong>{{product.product_name}}</strong><br>\n        {{product.product_desc}}\n    </li>\n    {% endfor %}\n</ul>"
+      "name": "Purchase Thank-You Template (Edited)",
+      "content": "<p>Dearest {{customer.firstname}} {{customer.lastname}},</p>\n\n<p>Thank you for your recent order! You've purchased:</p>\n\n<ul>\n    {% for product in customer.last_order.products %}\n    <li>\n        <strong>{{product.product_name}}</strong><br>\n        {{product.product_desc}}\n    </li>\n    {% endfor %}\n</ul>"
     }
   ],
   "customers": [
