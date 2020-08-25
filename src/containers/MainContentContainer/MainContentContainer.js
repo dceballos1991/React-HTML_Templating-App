@@ -5,6 +5,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexBasis: "66.66%",
     flexShrink: 0,
+    // flexGrow: 2,
     padding: "0 2rem",
     boxSizing: "border-box",
     ["@media (max-width:1200px)"]: { flexBasis: "100%" },

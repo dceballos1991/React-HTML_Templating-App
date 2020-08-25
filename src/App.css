@@ -6,6 +6,7 @@ body {
     rgba(240, 137, 177, 1) 100%
   );
   font-family: "Roboto", Helvetica, sans-serif;
+  overflow: hidden;
 }
 
 .App {

@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexBasis: "33.33%",
     flexShrink: 0,
+    // flexGrow: 1,
     padding: "0 2rem",
     boxSizing: "border-box",
     ["@media (max-width:1200px)"]: { flexBasis: "100%" },
@@ -142,7 +143,10 @@ export default function SubBar() {
   };
 
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      style={{ marginBottom: isWindowSmall ? "2rem" : undefined }}
+    >
       <Accordion
         className={classes.expanded}
         expanded={isWindowSmall ? isPanel1Open : true}

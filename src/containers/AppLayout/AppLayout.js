@@ -14,7 +14,8 @@ const AppLayout = (props) => {
       <Header />
       <div
         style={{
-          display: "flex",
+          display: !isWindowSmall ? "flex" : undefined,
+          flexWrap: "wrap",
           height: "100%",
           width: "100%",
           alignItems: !isWindowSmall ? "center" : null,
