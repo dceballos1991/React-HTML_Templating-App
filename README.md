@@ -1,68 +1,87 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+I've included the CRA README page for the available scripts, and notes.
 
-## Available Scripts
+## User Guide
 
-In the project directory, you can run:
+To start the aplication:
+1. npm install
+2. npm run start-server (server will be running in localhost:3000)
+3. npm start 
 
-### `npm start`
+I focused a lot on the application's UI & UX and my hopes are that all the functionalities
+are for the most part explicit and easy to figure out, and that the core logic is self- explanatory.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Having said that here is a quick application work flow to get you started:
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+1.  Users are able to a) select a customer & a template of their choice and have it displayed OR
+    b) create a new template from scratch.
+2.  Selecting a customer/template will display the template filling the variables with the 
+    selected customer's information. Two additional options will also appear under the Main content section: Edit Template, and Delete.
+3.  When editing the user will have access to the raw html template and will be able to change it as 
+    well as the templates name 
+4.  The user will have the choice to cancel or to Save this changes
+5.  Note: If I had more time I would implement a modal to make sure the user wants to Save 
+    (overwriting the current template) or Delete. 
+6.  Note: When displaying the template I made a conditional operation where if the information for
+    last_order was empty another string would be displayed. In some way can be considered error handling. 
+7.  If the user clicks on create New Template the user will be shown a different card under the Main
+    Content. This card shows the available variables as well as how to dynamically render products.
+8.  The save button is disabled unless the user writes down a name and content inside the template.
+9.  Lastly, the user can click "Show Example" which will display the raw html of another template
+    so the user can use that as a guide.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Code Base notes
 
-### `npm run build`
+The code base is structured in four main folders: components, containers, providers, and utils.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Data Handling
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+I decided to handle the data using Redux store patterns but in a React context + React useReducer hooks.
+I followed Redux best practices which are:
+    store
+         single source of truth (immutable)
+    reducer
+        pure function
+        inputs - (state, action)
+        switch statements
+        returns new object
+    action
+        object with type and payload
+        best practice to use action creators
+        creators return object
+    workflow
+        store receives action
+        triggers reducer which returns new state as new object (key here is to use spread or object assign)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+In a larger and more complex application I would break down the providers (as opposed to a single global AppProvider)
+and make them closer to the components that utilize them
 
-### `npm run eject`
+### Regarding Testing
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+I was not able to start implementing tests due to the deadline; however, here is how I would've done it. 
+First I would have added container components to the components that I would unit test in order to use the context
+in the containers and pass props to the components. For example:
+useAppContext would be removed from SubBar and added to a new component called SubBarContainer. This way unit testing SubBar would be much easier.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Also, rather I would have done both unit and integration tests but would have focused on the latter.
+Lastly, I would've used Jest, React-Testing-Library, and Cypress for integration tests
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### About UI and Design
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Due to time constraints I decided to use Material UI components. Two big downsides to Material UI are:
+1. Customizing components can be a painful experience
+2. If no customization is done, the application will end up looking like every other application that uses material UI
+or follows material design specifications  
 
-## Learn More
+Because of this and with more time available I would have probably gone with TailwindCSS
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Notifications handling, Error, and Loading States
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Error and Loading states are written inside the store so handling this states is as easy as a ternary operator. In fact, you can find that across this application. With more time I would have implemented a Spinner for the loading state and 
+snackbars for the Error states.
 
-### Code Splitting
+To deal with notifications, I would have created a NotificationProvider and be able to call modals and snackbars everytime I want to notify the user about something. 
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+If you have any questions dont hesitate to email me: dceballos1991@gmail.com
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify

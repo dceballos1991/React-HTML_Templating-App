@@ -4,9 +4,6 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
     "handlebars": "^4.7.6",
     "liquid": "^5.0.0",
     "react": "^16.13.1",
@@ -15,6 +12,9 @@
     "react-scripts": "3.4.3"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
     "json-server": "^0.16.1"
   },
   "scripts": {
