@@ -1,10 +1,13 @@
 body {
-  background: #eee;
-  /* background: linear-gradient(90deg, rgba(216,39,108,1) 22%, rgba(240,137,177,1) 100%); */
-  font-family: 'Roboto', Helvetica, sans-serif;
+  /* background: #eee; */
+  background: linear-gradient(
+    90deg,
+    rgba(216, 39, 108, 1) 22%,
+    rgba(240, 137, 177, 1) 100%
+  );
+  font-family: "Roboto", Helvetica, sans-serif;
 }
 
 .App {
   text-align: center;
 }
-

@@ -11,11 +11,10 @@ import {
 } from "../utils/APIUtils";
 // import { create } from "json-server";
 
-
 // In a more complex application I would use Redux as opposed to context. However, I do want to show how
 // I am using redux patterns and best practices even without using redux itself.
 // Also, in a larger application I would rather make smaller providers that are more specific to the components
-// that make use of them, as opposed to put everything on the global App Provider 
+// that make use of them, as opposed to put everything on the global App Provider
 
 const AppContext = React.createContext();
 
@@ -57,7 +56,7 @@ const initialState = {
     error: false,
     loading: false,
     lastUpdated: null,
-  }
+  },
 };
 
 function reducer(state, action) {
@@ -111,7 +110,7 @@ function reducer(state, action) {
             ...action.payload,
           },
         },
-      }
+      };
 
     default:
       return state;
@@ -121,10 +120,13 @@ function reducer(state, action) {
 const AppProvider = function (props) {
   const { children } = props;
   const [store, dispatch] = React.useReducer(reducer, initialState);
-  const [selectedCustomerID, setSelectedCustomerID] = React.useState();
-  const [selectedTemplateID, setSelectedTemplateID] = React.useState();
+  const [selectedCustomerID, setSelectedCustomerID] = React.useState("");
+  const [selectedTemplateID, setSelectedTemplateID] = React.useState("");
   const [updatedTemplate, setUpdatedTemplate] = React.useState({});
   const [newTemplate, setNewTemplate] = React.useState({});
+
+  // Create template mode is activated on the subBar and it tells the MainContent that
+  // app is in new template mode.
   const [createTemplateMode, setCreateTemplateMode] = React.useState(false);
   const [partialEmail, setPartialEmail] = React.useState("");
   const [fullEmail, setFullEmail] = React.useState("");
@@ -215,11 +217,11 @@ const AppProvider = function (props) {
           actionError("FETCH_CUSTOMER_BY_EMAIL", true);
           actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
         });
-    }
+    };
     if (!!fullEmail) {
       getCustomerByEmail(fullEmail);
     }
-  }, [fullEmail])
+  }, [fullEmail]);
 
   //fetch customers by partial email
   React.useEffect(() => {
@@ -235,11 +237,13 @@ const AppProvider = function (props) {
           actionError("FETCH_CUSTOMER_BY_EMAIL", true);
           actionLoading("FETCH_CUSTOMER_BY_EMAIL", false);
         });
-    }
+    };
     if (!!partialEmail) {
       getCustomerByPartialEmail(partialEmail);
+    } else {
+      actionUpdateData("FETCH_CUSTOMER_BY_EMAIL", null);
     }
-  }, [partialEmail])
+  }, [partialEmail]);
 
   // Eventhough you dont need to call the api for a specific customer or template
   // since when you fetch the list you get all the info, in a larger application
@@ -261,6 +265,8 @@ const AppProvider = function (props) {
 
     if (selectedTemplateID && !Object.keys(newTemplate).length) {
       getSelectedTemplate(selectedTemplateID);
+    } else {
+      actionUpdateData("FETCH_SELECTED_TEMPLATE", null);
     }
   }, [selectedTemplateID, newTemplate]);
 
@@ -281,24 +287,25 @@ const AppProvider = function (props) {
 
     if (!!selectedCustomerID) {
       getSelectedCustomer(selectedCustomerID);
+    } else {
+      actionUpdateData("FETCH_SELECTED_CUSTOMER", null);
     }
   }, [selectedCustomerID]);
 
   React.useEffect(() => {
-
     const putUpdatedTemplate = async (body) => {
       try {
         const response = await updateTemplate(body); // use this response to trigger a snackbar that communicates success to the user
-        setSelectedTemplateID(updatedTemplate.id) // will trigger a refresh of the updated template
+        setSelectedTemplateID(updatedTemplate.id); // will trigger a refresh of the updated template
       } catch (e) {
-        console.log("There was an error when updating template") // Use this catch to trigger error snackbar
+        console.log("There was an error when updating template"); // Use this catch to trigger error snackbar
       }
-    }
+    };
 
     if (!!Object.keys(updatedTemplate).length) {
       putUpdatedTemplate(updatedTemplate);
     }
-  }, [updatedTemplate])
+  }, [updatedTemplate]);
 
   React.useEffect(() => {
     const postNewTemplate = async (body) => {
@@ -307,15 +314,15 @@ const AppProvider = function (props) {
         setSelectedTemplateID(newTemplate.id); // refresh selected template
         setRefresh(true); // refresh template list
       } catch (e) {
-        console.log("There was an error when creating new template") // Use this catch to trigger error snackbar
+        console.log("There was an error when creating new template"); // Use this catch to trigger error snackbar
       }
-    }
+    };
 
     if (!!Object.keys(newTemplate).length) {
       postNewTemplate(newTemplate);
     }
-  }, [newTemplate])
-  console.log("store.CUSTOMER_LIST", store.CUSTOMER_LIST)
+  }, [newTemplate]);
+
   return (
     <AppContext.Provider
       value={{
@@ -325,10 +332,13 @@ const AppProvider = function (props) {
         customerList: store.CUSTOMER_LIST,
         templateList: store.TEMPLATE_LIST,
         setNewTemplate,
+        selectedCustomerID,
         setSelectedCustomerID,
+        selectedTemplateID,
         setSelectedTemplateID,
         setUpdatedTemplate,
         setRefresh,
+        partialEmail,
         setPartialEmail,
         setFullEmail,
         createTemplateMode,
