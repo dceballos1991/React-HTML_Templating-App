@@ -9,7 +9,7 @@ import {
   fetchCustomersByEmail,
   fetchCustomersByPartialEmail,
 } from "../utils/APIUtils";
-import { create } from "json-server";
+// import { create } from "json-server";
 
 
 // In a more complex application I would use Redux as opposed to context. However, I do want to show how
@@ -125,9 +125,10 @@ const AppProvider = function (props) {
   const [selectedTemplateID, setSelectedTemplateID] = React.useState();
   const [updatedTemplate, setUpdatedTemplate] = React.useState({});
   const [newTemplate, setNewTemplate] = React.useState({});
+  const [createTemplateMode, setCreateTemplateMode] = React.useState(false);
   const [partialEmail, setPartialEmail] = React.useState("");
   const [fullEmail, setFullEmail] = React.useState("");
-  const [refresh, setRefresh] = React.useState(false);
+  const [refresh, setRefresh] = React.useState(true);
 
   // action creators:
   function actionLoading(actionType, state) {
@@ -314,19 +315,24 @@ const AppProvider = function (props) {
       postNewTemplate(newTemplate);
     }
   }, [newTemplate])
-
+  console.log("store.CUSTOMER_LIST", store.CUSTOMER_LIST)
   return (
     <AppContext.Provider
       value={{
         selectedCustomerData: store.SELECTED_CUSTOMER,
         selectedTemplateData: store.SELECTED_TEMPLATE,
+        customerSearchByEmailData: store.CUSTOMER_BY_EMAIL,
         customerList: store.CUSTOMER_LIST,
         templateList: store.TEMPLATE_LIST,
         setNewTemplate,
         setSelectedCustomerID,
         setSelectedTemplateID,
         setUpdatedTemplate,
-        setRefresh
+        setRefresh,
+        setPartialEmail,
+        setFullEmail,
+        createTemplateMode,
+        setCreateTemplateMode,
       }}
     >
       {children}
