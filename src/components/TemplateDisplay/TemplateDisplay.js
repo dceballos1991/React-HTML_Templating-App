@@ -24,7 +24,18 @@ const useStyles = makeStyles({
   pos: {
     marginBottom: 12,
   },
-  template: {}
+  buttonMain: {
+    background:
+      "linear-gradient(90deg, rgba(216,39,108,1) 22%, rgba(240,137,177,1) 100%)",
+    color: "white",
+    margin: "0 1rem 1rem 1rem"
+  },
+  buttonSecondary: {
+    margin: "0 1rem 1rem 1rem"
+  },
+  buttonActions: {
+    justifyContent: "center"
+  }
 });
 
 export default function TemplateDisplay() {
@@ -42,7 +53,7 @@ export default function TemplateDisplay() {
     if (!!selectedCustomerData.data) {
       let selectedCustomerDataFixed = { ...selectedCustomerData.data };
       if (!selectedCustomerDataFixed.last_order) {
-        selectedCustomerDataFixed.last_order = {products: [{ product_name: "How embarrassing! We don't know your last purchase :(" }]};
+        selectedCustomerDataFixed.last_order = { products: [{ product_name: "How embarrassing! We don't know your last purchase :(" }] };
       }
       setTemplateProps({ customer: selectedCustomerDataFixed });
     }
@@ -79,8 +90,21 @@ export default function TemplateDisplay() {
           )}
       </CardContent>
       {!!selectedCustomerData.data && !!selectedTemplateData.data && (
-        <CardActions>
-          <Button size="small">Learn More</Button>
+        <CardActions className={classes.buttonActions} >
+          <Button
+            variant="contained"
+            className={classes.buttonMain}
+          // onClick={() => handleCreateTemplateClick}
+          >
+            edit template
+                </Button>
+          <Button
+            variant="outlined"
+            className={classes.buttonSecondary}
+          // onClick={() => handleCreateTemplateClick}
+          >
+            Delete
+                </Button>
         </CardActions>
       )}
     </Card>
