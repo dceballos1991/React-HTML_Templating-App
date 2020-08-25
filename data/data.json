@@ -4,6 +4,21 @@
       "id": 1,
       "name": "Purchase Thank-You Template (Edited)",
       "content": "<p>Dearest {{customer.firstname}} {{customer.lastname}},</p>\n\n<p>Thank you for your recent order! You've purchased:</p>\n\n<ul>\n    {% for product in customer.last_order.products %}\n    <li>\n        <strong>{{product.product_name}}</strong><br>\n        {{product.product_desc}}\n    </li>\n    {% endfor %}\n</ul>"
+    },
+    {
+      "id": "mynewtemplate7",
+      "name": "my new template",
+      "content": "<p>Hellooooooo {{customer.firstname}}</p>"
+    },
+    {
+      "id": "secondnewtemplate41",
+      "name": "second new template",
+      "content": "<h1>You are {{customer.firstname}}</h1>"
+    },
+    {
+      "id": "test337",
+      "name": "test 3",
+      "content": "<h4>{{customer.email}}</h4>"
     }
   ],
   "customers": [

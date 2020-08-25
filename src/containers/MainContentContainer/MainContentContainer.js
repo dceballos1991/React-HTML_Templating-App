@@ -1,5 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import TemplateDisplay from "../../components/TemplateDisplay/TemplateDisplay";
+import NewTemplate from "../../components/NewTemplate/NewTemplate";
+import { useAppContext } from "../../providers/AppProvider";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,9 +16,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MainContentContainer(props) {
+export default function MainContentContainer() {
   const classes = useStyles();
-  const { children } = props;
+  const {
+    createTemplateMode
+  } = useAppContext();
 
-  return <div className={classes.root}>{children}</div>;
+  return (
+    <div className={classes.root}>
+      {!!createTemplateMode ? (
+        <NewTemplate />
+      ) : (
+          <TemplateDisplay />
+        )}
+    </div>
+  );
 }

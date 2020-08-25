@@ -265,12 +265,12 @@ const AppProvider = function (props) {
         });
     };
 
-    if (selectedTemplateID && !Object.keys(newTemplate).length) {
+    if (selectedTemplateID) {
       getSelectedTemplate(selectedTemplateID);
     } else {
       actionUpdateData("FETCH_SELECTED_TEMPLATE", null);
     }
-  }, [selectedTemplateID, newTemplate, refresh]);
+  }, [selectedTemplateID, refresh]);
 
   React.useEffect(() => {
     const getSelectedCustomer = (id) => {
@@ -329,13 +329,14 @@ const AppProvider = function (props) {
       try {
         const response = await saveNewTemplate(body); // use response to trigger success snackbar
         setSelectedTemplateID(newTemplate.id); // refresh selected template
+        setNewTemplate(null);
         setRefresh(true); // refresh template list
       } catch (e) {
         console.log("There was an error when creating new template"); // Use this catch to trigger error snackbar
       }
     };
 
-    if (!!Object.keys(newTemplate).length) {
+    if (!!newTemplate && !!newTemplate.id && !!newTemplate.name && !!newTemplate.content) {
       postNewTemplate(newTemplate);
     }
   }, [newTemplate]);
